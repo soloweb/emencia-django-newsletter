@@ -68,6 +68,7 @@ class BaseNewsletterAdmin(admin.ModelAdmin):
         return queryset
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        print db_field
         if db_field.name == 'mailing_list' and \
                not request.user.is_superuser and USE_WORKGROUPS:
             mailinglists_pk = request_workgroups_mailinglists_pk(request)
@@ -184,3 +185,4 @@ if USE_TINYMCE:
 else:
     class NewsletterAdmin(BaseNewsletterAdmin):
         pass
+
