@@ -167,13 +167,16 @@ class NewsLetterSender(object):
         if TRACKING_LINKS:
             content = track_links(content, context)
 
+        link_site = ''
         if INCLUDE_SITE_LINKS:
             link_site = render_to_string('newsletter/newsletter_link_site.html', context)
-            content = body_insertion(content, link_site)
+
+        content = body_insertion(content, link_site)
 
         if INCLUDE_UNSUBSCRIPTION:
             unsubscription = render_to_string('newsletter/newsletter_link_unsubscribe.html', context)
             content = body_insertion(content, unsubscription, end=True)
+
         if TRACKING_IMAGE:
             image_tracking = render_to_string('newsletter/newsletter_image_tracking.html', context)
             content = body_insertion(content, image_tracking, end=True)
