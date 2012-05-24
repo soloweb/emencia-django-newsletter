@@ -48,7 +48,7 @@ class BaseNewsletterAdmin(admin.ModelAdmin):
                                        'classes': ('collapse',)}),
                  )
     prepopulated_fields = {'slug': ('title',)}
-    inlines = (AttachmentAdminInline,)
+    inlines = [AttachmentAdminInline,]
     actions = ['send_mail_test', 'make_ready_to_send', 'make_cancel_sending']
     actions_on_top = False
     actions_on_bottom = True
