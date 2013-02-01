@@ -55,7 +55,7 @@ class BaseNewsletterAdmin(admin.ModelAdmin):
 
     def get_actions(self, request):
         actions = super(BaseNewsletterAdmin, self).get_actions(request)
-        if not request.user.has_perm('newsletter.can_change_status'):
+        if not request.user.has_perm('emencia.can_change_status'):
             del actions['make_ready_to_send']
             del actions['make_cancel_sending']
         return actions
@@ -78,7 +78,7 @@ class BaseNewsletterAdmin(admin.ModelAdmin):
 
     def formfield_for_choice_field(self, db_field, request, **kwargs):
         if db_field.name == 'status' and \
-               not request.user.has_perm('newsletter.can_change_status'):
+               not request.user.has_perm('emencia.can_change_status'):
             kwargs['choices'] = ((Newsletter.DRAFT, _('Default')),)
             return db_field.formfield(**kwargs)
         return super(BaseNewsletterAdmin, self).formfield_for_choice_field(
@@ -109,7 +109,7 @@ class BaseNewsletterAdmin(admin.ModelAdmin):
                     self.message_user(request, _('Unable to download HTML, due to errors within.'))
             else:
                 self.message_user(request, _('Please install lxml for parsing an URL.'))
-        if not request.user.has_perm('newsletter.can_change_status'):
+        if not request.user.has_perm('emencia.can_change_status'):
             newsletter.status = form.initial.get('status', Newsletter.DRAFT)
 
         newsletter.save()
