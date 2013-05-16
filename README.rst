@@ -64,7 +64,7 @@ Make sure to install these packages prior to installation :
 
  * Django >= 1.2
  * html2text
- * BeautifulSoup
+ * beautifulsoup4
  * django-tagging
  * vobject
  * xlwt
