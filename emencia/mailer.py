@@ -143,6 +143,7 @@ class NewsLetterSender(object):
             fd.close()
             message_attachment.add_header('Content-Disposition', 'attachment',
                                           filename=attachment.title)
+            message_attachment.add_header('Content-ID', attachment.title)
             attachments.append(message_attachment)
 
         return attachments
