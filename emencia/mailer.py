@@ -31,6 +31,7 @@ from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.utils.encoding import smart_str
 from django.utils.encoding import smart_unicode
+from django.core.urlresolvers import reverse_lazy
 
 from emencia.models import Newsletter
 from emencia.models import ContactMailingStatus
@@ -45,8 +46,7 @@ from emencia.settings import UNIQUE_KEY_CHAR_SET
 from emencia.settings import INCLUDE_UNSUBSCRIPTION
 from emencia.settings import INCLUDE_SITE_LINKS
 from emencia.settings import SLEEP_BETWEEN_SENDING
-from emencia.settings import \
-     RESTART_CONNECTION_BETWEEN_SENDING
+from emencia.settings import RESTART_CONNECTION_BETWEEN_SENDING
 
 
 if not hasattr(timedelta, 'total_seconds'):
@@ -165,23 +165,23 @@ class NewsLetterSender(object):
                            'newsletter': self.newsletter,
                            'tracking_image_format': TRACKING_IMAGE_FORMAT,
                            'uidb36': uidb36, 'token': token})
+        if INCLUDE_SITE_LINKS:
+            context['web_version_link'] = reverse_lazy(
+                'newsletter_newsletter_contact', kwargs={'slug': self.newsletter.slug,
+                                                          'uidb36': uidb36, 'token': token})
+        if INCLUDE_UNSUBSCRIPTION:
+            context['unsubscribe_link'] = reverse_lazy(
+                'newsletter_mailinglist_unsubscribe', kwargs={'slug': self.newsletter.slug,
+                                                              'uidb36': uidb36, 'token': token})
+        if TRACKING_IMAGE:
+            image_tracking = render_to_string('newsletter/newsletter_image_tracking.html', context)
+            context['tracking_image_link'] = reverse_lazy(
+                'newsletter_newsletter_tracking', kwargs={'slug': self.newsletter.slug,
+                                                          'uidb36': uidb36, 'token': token,
+                                                          'format': TRACKING_IMAGE_FORMAT})
         content = self.newsletter_template.render(context)
         if TRACKING_LINKS:
             content = track_links(content, context)
-
-        link_site = ''
-        if INCLUDE_SITE_LINKS:
-            link_site = render_to_string('newsletter/newsletter_link_site.html', context)
-
-        content = body_insertion(content, link_site)
-
-        if INCLUDE_UNSUBSCRIPTION:
-            unsubscription = render_to_string('newsletter/newsletter_link_unsubscribe.html', context)
-            content = body_insertion(content, unsubscription, end=True)
-
-        if TRACKING_IMAGE:
-            image_tracking = render_to_string('newsletter/newsletter_image_tracking.html', context)
-            content = body_insertion(content, image_tracking, end=True)
         return smart_unicode(content)
 
     def update_newsletter_status(self):
